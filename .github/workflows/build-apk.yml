@@ -1,0 +1,271 @@
+name: MAXIM APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Android-Projekt erstellen
+        run: |
+          mkdir -p maxim/app/src/main/java/com/maxim/boot
+          mkdir -p maxim/app/src/main/res/layout
+          mkdir -p maxim/app/src/main/res/values
+
+          cd maxim
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "Maxim"
+          include(":app")
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.maxim.boot'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.maxim.boot'
+                  minSdk 26
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.7.0'
+          }
+          EOF
+
+          cat > app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="Theme.Maxim" parent="Theme.AppCompat.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:windowFullscreen">true</item>
+                  <item name="android:navigationBarColor">#000000</item>
+                  <item name="android:statusBarColor">#000000</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/layout/activity_main.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#000000">
+
+              <View
+                  android:id="@+id/beam"
+                  android:layout_width="8dp"
+                  android:layout_height="match_parent"
+                  android:layout_gravity="center"
+                  android:background="#FF1515"
+                  android:alpha="0"/>
+
+              <TextView
+                  android:id="@+id/m"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:text="M"
+                  android:textColor="#FFFFFF"
+                  android:textSize="150sp"
+                  android:textStyle="bold"
+                  android:fontFamily="sans-serif-black"
+                  android:alpha="0"/>
+
+              <TextView
+                  android:id="@+id/maxim"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:text="MAXIM"
+                  android:textColor="#FFFFFF"
+                  android:textSize="58sp"
+                  android:textStyle="bold"
+                  android:letterSpacing="0.08"
+                  android:fontFamily="sans-serif-black"
+                  android:alpha="0"/>
+
+          </FrameLayout>
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <application
+                  android:theme="@style/Theme.Maxim"
+                  android:label="MAXIM"
+                  android:allowBackup="false">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:screenOrientation="portrait">
+
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+
+                  </activity>
+
+              </application>
+
+          </manifest>
+          EOF
+
+          cat > app/src/main/java/com/maxim/boot/MainActivity.java <<'EOF'
+          package com.maxim.boot;
+
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.os.Handler;
+          import android.os.Looper;
+          import android.view.View;
+          import android.view.Window;
+          import android.view.WindowManager;
+          import android.widget.TextView;
+
+          public class MainActivity extends Activity {
+
+              Handler handler = new Handler(Looper.getMainLooper());
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                  getWindow().setFlags(
+                      WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                      WindowManager.LayoutParams.FLAG_FULLSCREEN
+                  );
+
+                  setContentView(R.layout.activity_main);
+
+                  getWindow().getDecorView().setSystemUiVisibility(
+                      View.SYSTEM_UI_FLAG_FULLSCREEN |
+                      View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                      View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                  );
+
+                  startAnimation();
+              }
+
+              private void startAnimation() {
+
+                  View beam = findViewById(R.id.beam);
+                  TextView m = findViewById(R.id.m);
+                  TextView maxim = findViewById(R.id.maxim);
+
+                  beam.setScaleX(0.2f);
+                  m.setScaleX(0.7f);
+                  m.setScaleY(0.7f);
+
+                  handler.postDelayed(() -> {
+                      beam.animate()
+                          .alpha(0.9f)
+                          .scaleX(18f)
+                          .setDuration(500)
+                          .start();
+                  }, 100);
+
+                  handler.postDelayed(() -> {
+                      m.animate()
+                          .alpha(1f)
+                          .scaleX(1f)
+                          .scaleY(1f)
+                          .setDuration(600)
+                          .start();
+                  }, 600);
+
+                  handler.postDelayed(() -> {
+                      m.animate()
+                          .alpha(0f)
+                          .setDuration(350)
+                          .start();
+
+                      maxim.animate()
+                          .alpha(1f)
+                          .setDuration(500)
+                          .start();
+                  }, 1700);
+
+                  handler.postDelayed(() -> {
+                      maxim.animate()
+                          .alpha(0f)
+                          .setDuration(500)
+                          .withEndAction(this::finish)
+                          .start();
+                  }, 4000);
+              }
+          }
+          EOF
+
+      - name: Java einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle einrichten
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Android SDK einrichten
+        uses: android-actions/setup-android@v3
+
+      - name: Android SDK installieren
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: APK bauen
+        working-directory: maxim
+        run: gradle assembleDebug
+
+      - name: APK speichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAXIM-APK
+          path: maxim/app/build/outputs/apk/debug/app-debug.apk
