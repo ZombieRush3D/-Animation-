@@ -254,13 +254,7 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Android SDK einrichten
-        uses: android-actions/setup-android@v3
-
-      - name: Android SDK installieren
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
-      - name: APK bauen
+            - name: APK bauen
         working-directory: maxim
         run: gradle assembleDebug
 
