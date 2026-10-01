@@ -256,10 +256,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Android SDK installieren
+            - name: Android SDK installieren
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)
+          echo "SDKMANAGER=$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: APK bauen
         working-directory: maxim
