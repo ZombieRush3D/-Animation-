@@ -169,7 +169,7 @@ jobs:
 
           public class MainActivity extends Activity {
 
-              Handler handler = new Handler(Looper.getMainLooper());
+              private final Handler handler = new Handler(Looper.getMainLooper());
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +194,6 @@ jobs:
               }
 
               private void startAnimation() {
-
                   View beam = findViewById(R.id.beam);
                   TextView m = findViewById(R.id.m);
                   TextView maxim = findViewById(R.id.maxim);
@@ -203,22 +202,20 @@ jobs:
                   m.setScaleX(0.7f);
                   m.setScaleY(0.7f);
 
-                  handler.postDelayed(() -> {
+                  handler.postDelayed(() ->
                       beam.animate()
                           .alpha(0.9f)
                           .scaleX(18f)
                           .setDuration(500)
-                          .start();
-                  }, 100);
+                          .start(), 100);
 
-                  handler.postDelayed(() -> {
+                  handler.postDelayed(() ->
                       m.animate()
                           .alpha(1f)
                           .scaleX(1f)
                           .scaleY(1f)
                           .setDuration(600)
-                          .start();
-                  }, 600);
+                          .start(), 600);
 
                   handler.postDelayed(() -> {
                       m.animate()
@@ -232,13 +229,18 @@ jobs:
                           .start();
                   }, 1700);
 
-                  handler.postDelayed(() -> {
+                  handler.postDelayed(() ->
                       maxim.animate()
                           .alpha(0f)
                           .setDuration(500)
                           .withEndAction(this::finish)
-                          .start();
-                  }, 4000);
+                          .start(), 4000);
+              }
+
+              @Override
+              protected void onDestroy() {
+                  handler.removeCallbacksAndMessages(null);
+                  super.onDestroy();
               }
           }
           EOF
@@ -254,7 +256,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-            - name: APK bauen
+      - name: Android SDK installieren
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: APK bauen
         working-directory: maxim
         run: gradle assembleDebug
 
