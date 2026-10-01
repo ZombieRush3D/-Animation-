@@ -69,15 +69,13 @@ jobs:
               }
           }
 
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.7.0'
-          }
+          
           EOF
 
           cat > app/src/main/res/values/styles.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <style name="Theme.Maxim" parent="Theme.AppCompat.NoActionBar">
+                        <style name="Theme.Maxim" parent="@android:style/Theme.Material.NoActionBar"> 
                   <item name="android:fontFamily">sans</item>
                   <item name="android:windowFullscreen">true</item>
                   <item name="android:navigationBarColor">#000000</item>
