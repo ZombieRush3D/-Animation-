@@ -256,7 +256,7 @@ jobs:
         with:
           gradle-version: '8.9'
 
-            - name: Android SDK installieren
+      - name: Android SDK installieren
         run: |
           SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)
           echo "SDKMANAGER=$SDKMANAGER"
